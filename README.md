@@ -33,7 +33,7 @@ Before you begin, ensure you have the following software installed:
 
 ### 1. Select the platform
 
-Open to **build.sh**:
+Open **build.sh**:
 
 - If you are using Windows: comment the fragment of code that creates the Apple .dmg and leave the .exe
 - If you are using MacOS: comment the fragment of code that creates the .exe and leave the .dmg
