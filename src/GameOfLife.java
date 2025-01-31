@@ -3,8 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class GameOfLife extends JPanel {
-    private static final int SIZE = 50; // Tamaño de la cuadrícula
-    private static final int CELL_SIZE = 10; // Tamaño de cada celda
+    private static int SIZE = 50; // Tamaño de la cuadrícula
+    private static int CELL_SIZE = 10; // Tamaño de cada celda
     private boolean[][] grid = new boolean[SIZE][SIZE];
     
     private boolean isAutoMode = false; // Indica si estamos en modo automático
@@ -35,7 +35,7 @@ public class GameOfLife extends JPanel {
         setFocusable(true);
         
         // Crear el botón de toggle
-        toggleButton = new JButton("Modo Automático");
+        toggleButton = new JButton("Auto Mode");
         toggleButton.setBounds(SIZE * CELL_SIZE - 250, SIZE * CELL_SIZE + 10, 240, 30); // Posición y tamaño
         toggleButton.addActionListener(e -> toggleMode());
         
@@ -60,6 +60,16 @@ public class GameOfLife extends JPanel {
             }
         });
     }
+
+    private void resetGrid() {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                grid[i][j] = Math.random() > 0.7;
+            }
+        }
+        repaint();
+    }
+
     
     private void nextGeneration() {
         boolean[][] newGrid = new boolean[SIZE][SIZE];
@@ -107,11 +117,11 @@ public class GameOfLife extends JPanel {
     private void updateButtonColor() {
         if (isAutoMode) {
             toggleButton.setBackground(Color.GREEN); // Botón verde en modo automático
-            toggleButton.setText("Modo Manual");
+            toggleButton.setText("Manual Mode");
             SwingUtilities.updateComponentTreeUI(this);
         } else {
             toggleButton.setBackground(Color.WHITE); // Color normal en modo manual
-            toggleButton.setText("Modo Automático");
+            toggleButton.setText("Auto Mode");
             SwingUtilities.updateComponentTreeUI(this);
         }
     }
@@ -130,11 +140,115 @@ public class GameOfLife extends JPanel {
     }
     
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Game of Life");
-        GameOfLife game = new GameOfLife();
-        frame.add(game);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            String os = System.getProperty("os.name").toLowerCase();
+            boolean isMac = os.contains("mac");
+
+            if (isMac) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Game of Life");
+            }
+
+            JFrame frame = new JFrame("Game of Life");
+            GameOfLife game = new GameOfLife();
+            frame.add(game);
+
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int maxWidth = screenSize.width;
+            int maxHeight = screenSize.height;
+
+            int minWidth = SIZE * CELL_SIZE;
+            int minHeight = SIZE * CELL_SIZE + 50;
+
+            frame.setMinimumSize(new Dimension(minWidth, minHeight));
+            frame.setMaximumSize(new Dimension(maxWidth, maxHeight));
+
+            // Crear la barra de menú
+            JMenuBar menuBar = createMenuBar(game);
+            frame.setJMenuBar(menuBar); // Siempre se asigna, pero en macOS se muestra en la barra del sistema
+
+            ImageIcon icon = new ImageIcon("../media/icon.png");
+            frame.setIconImage(icon.getImage());
+
+            frame.setResizable(true);
+            frame.pack();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        });
+    }
+
+    private static JMenuBar createMenuBar(GameOfLife game) {
+
+        JMenuBar menuBar = new JMenuBar();
+
+        // FILE MENU
+        JMenu fileMenu = new JMenu("File");
+
+        // Restart
+        JMenuItem restart = new JMenuItem("New simulation");
+        restart.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        restart.addActionListener(e -> game.resetGrid());
+
+        fileMenu.add(restart);
+        fileMenu.addSeparator();
+
+        // Open TIENE QUE IMPORTAR
+        JMenuItem open = new JMenuItem("Open simulation");
+        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+
+        fileMenu.add(open);
+
+        // Save Submenu TIENE QUE GUARDAR Y HACER CAPTURAS
+        JMenu saveSubMenu = new JMenu("Save");
+
+        JMenuItem saveScreenShot = new JMenuItem("Save screenshot");
+        saveScreenShot.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+
+        JMenuItem saveSim = new JMenuItem("Save simulation");
+        saveSim.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+
+        saveSubMenu.add(saveSim);
+        saveSubMenu.add(saveScreenShot);
+        fileMenu.add(saveSubMenu);
+        
+        // EDIT MENU
+        JMenu editMenu = new JMenu("Edit");
+
+        // Auto Mode
+        JMenuItem toggleAuto = new JMenuItem("Toggle Auto Mode");
+        toggleAuto.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        toggleAuto.addActionListener(e -> game.toggleMode());
+
+        editMenu.add(toggleAuto);
+
+        // Settings TIENE QUE ABRIR UNA VENTANA PARA %, TAMAÑO Y VELOCIDAD
+        JMenuItem settings = new JMenuItem("Settings");
+        settings.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+
+        editMenu.add(settings);
+
+        // HELP MENU
+        JMenu helpMenu = new JMenu("Help");
+
+        // Github TIENE QUE LLEVAR A GITHUB
+        JMenuItem github = new JMenuItem("Open on GitHub");
+
+        helpMenu.add(github);
+
+        // Credits
+        JMenu credits = new JMenu("Credits");
+
+        JMenuItem dev = new JMenuItem("Developed by Javier Iregui");
+        dev.setEnabled(false);
+
+        credits.add(dev);
+        helpMenu.add(credits);
+
+        // Adding menus to the bar
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+        menuBar.add(helpMenu);
+
+        return menuBar;
     }
 }
