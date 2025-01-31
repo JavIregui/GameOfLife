@@ -5,9 +5,10 @@ import java.net.URI;
 
 public class GameOfLife extends JPanel {
     private static int SIZE = 50; // Grid size
-    private static int CELL_SIZE = 10;
+    private static int CELL_SIZE = 5;
     private double population = 0.3;
-    private boolean[][] grid = new boolean[SIZE][SIZE];
+    private boolean[][] grid = new boolean[500/CELL_SIZE][500/CELL_SIZE];
+    private boolean showGrid = true;
     
     private boolean isAutoMode = false;
     private Timer autoTimer;
@@ -18,7 +19,7 @@ public class GameOfLife extends JPanel {
 
         resetGrid();
         
-        setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
+        setPreferredSize(new Dimension(500, 500 + 50));
         setLayout(null);
         
         addKeyListener(new KeyAdapter() {
@@ -34,8 +35,15 @@ public class GameOfLife extends JPanel {
         setFocusable(true);
         
         toggleButton = new JButton("Auto Mode");
-        toggleButton.setBounds(SIZE * CELL_SIZE - 250, SIZE * CELL_SIZE + 10, 240, 30);
+        toggleButton.setBounds(0, 0, 240, 30);
         toggleButton.addActionListener(e -> toggleMode());
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                onWindowResized();
+            }
+        });
         
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -54,6 +62,21 @@ public class GameOfLife extends JPanel {
                 repaint();
             }
         });
+    }
+
+    private void onWindowResized() {
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        int side = Math.min(topFrame.getWidth(), topFrame.getHeight() - 75);
+    
+        SIZE = side / CELL_SIZE;
+        grid = new boolean[SIZE][SIZE];
+    
+        setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
+
+        toggleButton.setBounds(topFrame.getWidth() / 2 - 120, topFrame.getHeight()-60, 240, 30);
+
+        resetGrid();
     }
 
     private void resetGrid() {
@@ -96,6 +119,7 @@ public class GameOfLife extends JPanel {
     
     private void toggleMode() {
         isAutoMode = !isAutoMode;
+
         if (isAutoMode) {
             autoTimer.start();
         } else {
@@ -105,16 +129,17 @@ public class GameOfLife extends JPanel {
 
         toggleButton.setFocusable(false);
         requestFocusInWindow();
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        topFrame.setResizable(!isAutoMode);
     }
     
     private void updateButtonColor() {
         if (isAutoMode) {
-            toggleButton.setBackground(Color.GREEN);
-            toggleButton.setText("Manual Mode");
+            toggleButton.setBackground(Color.LIGHT_GRAY);
             SwingUtilities.updateComponentTreeUI(this);
         } else {
             toggleButton.setBackground(Color.WHITE);
-            toggleButton.setText("Auto Mode");
             SwingUtilities.updateComponentTreeUI(this);
         }
     }
@@ -122,12 +147,22 @@ public class GameOfLife extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+
+        int offsetX = (topFrame.getWidth() / 2) - (SIZE * CELL_SIZE / 2);
+        int offsetY = (topFrame.getHeight() / 2) - ((SIZE * CELL_SIZE + 50) / 2);
+
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 g.setColor(grid[i][j] ? Color.BLACK : Color.WHITE);
-                g.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                g.setColor(Color.GRAY);
-                g.drawRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                g.fillRect(j * CELL_SIZE + offsetX, i * CELL_SIZE + offsetY, CELL_SIZE, CELL_SIZE);
+
+                if(CELL_SIZE > 2 && showGrid){
+                    g.setColor(Color.GRAY);
+                    g.drawRect(j * CELL_SIZE + offsetX, i * CELL_SIZE + offsetY, CELL_SIZE, CELL_SIZE);
+                }
             }
         }
     }
@@ -150,8 +185,8 @@ public class GameOfLife extends JPanel {
             int maxWidth = screenSize.width;
             int maxHeight = screenSize.height;
 
-            int minWidth = SIZE * CELL_SIZE;
-            int minHeight = SIZE * CELL_SIZE + 50;
+            int minWidth = 500;
+            int minHeight = 500 + 50;
 
             frame.setMinimumSize(new Dimension(minWidth, minHeight));
             frame.setMaximumSize(new Dimension(maxWidth, maxHeight));
