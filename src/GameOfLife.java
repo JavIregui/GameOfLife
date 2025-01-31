@@ -4,24 +4,22 @@ import java.awt.event.*;
 import java.net.URI;
 
 public class GameOfLife extends JPanel {
-    private static int SIZE = 50; // Tamaño de la cuadrícula
-    private static int CELL_SIZE = 10; // Tamaño de cada celda
+    private static int SIZE = 50; // Grid size
+    private static int CELL_SIZE = 10;
+    private double population = 0.3;
     private boolean[][] grid = new boolean[SIZE][SIZE];
     
-    private boolean isAutoMode = false; // Indica si estamos en modo automático
-    private Timer autoTimer; // Timer para el modo automático
-    private JButton toggleButton; // Botón para cambiar de modo
+    private boolean isAutoMode = false;
+    private Timer autoTimer;
+    private int timerSpeed = 8;
+    private JButton toggleButton;
     
     public GameOfLife() {
-        // Inicializa con un patrón aleatorio
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                grid[i][j] = Math.random() > 0.7;
-            }
-        }
+
+        resetGrid();
         
-        setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50)); // Añadir espacio para el botón
-        setLayout(null); // Establecer el layout a null para poder posicionar el botón manualmente
+        setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
+        setLayout(null);
         
         addKeyListener(new KeyAdapter() {
             @Override
@@ -35,26 +33,22 @@ public class GameOfLife extends JPanel {
         
         setFocusable(true);
         
-        // Crear el botón de toggle
         toggleButton = new JButton("Auto Mode");
-        toggleButton.setBounds(SIZE * CELL_SIZE - 250, SIZE * CELL_SIZE + 10, 240, 30); // Posición y tamaño
+        toggleButton.setBounds(SIZE * CELL_SIZE - 250, SIZE * CELL_SIZE + 10, 240, 30);
         toggleButton.addActionListener(e -> toggleMode());
         
-        // Establecer un Look and Feel personalizado
         try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName()); // Look and Feel consistente
-            SwingUtilities.updateComponentTreeUI(this); // Actualiza la interfaz con el nuevo Look and Feel
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            SwingUtilities.updateComponentTreeUI(this);
         } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         
-        add(toggleButton); // Añadir el botón al panel
+        add(toggleButton);
 
-        // Cambiar el color inicial del botón
         updateButtonColor();
         
-        // Crear el Timer para el modo automático
-        autoTimer = new Timer(100, e -> {
+        autoTimer = new Timer(555-55*timerSpeed, e -> {
             if (isAutoMode) {
                 nextGeneration();
                 repaint();
@@ -65,13 +59,12 @@ public class GameOfLife extends JPanel {
     private void resetGrid() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                grid[i][j] = Math.random() > 0.7;
+                grid[i][j] = Math.random() > 1-population;
             }
         }
         repaint();
     }
-
-    
+ 
     private void nextGeneration() {
         boolean[][] newGrid = new boolean[SIZE][SIZE];
         for (int i = 0; i < SIZE; i++) {
@@ -104,24 +97,23 @@ public class GameOfLife extends JPanel {
     private void toggleMode() {
         isAutoMode = !isAutoMode;
         if (isAutoMode) {
-            autoTimer.start(); // Iniciar el temporizador en modo automático
+            autoTimer.start();
         } else {
-            autoTimer.stop(); // Detener el temporizador en modo manual
+            autoTimer.stop();
         }
-        updateButtonColor(); // Actualizar el color del botón
+        updateButtonColor();
 
-        // Quitar el enfoque del botón y ponerlo en el JPanel
-        toggleButton.setFocusable(false); // Deshabilitar el enfoque en el botón
-        requestFocusInWindow(); // Darle enfoque al JPanel
+        toggleButton.setFocusable(false);
+        requestFocusInWindow();
     }
     
     private void updateButtonColor() {
         if (isAutoMode) {
-            toggleButton.setBackground(Color.GREEN); // Botón verde en modo automático
+            toggleButton.setBackground(Color.GREEN);
             toggleButton.setText("Manual Mode");
             SwingUtilities.updateComponentTreeUI(this);
         } else {
-            toggleButton.setBackground(Color.WHITE); // Color normal en modo manual
+            toggleButton.setBackground(Color.WHITE);
             toggleButton.setText("Auto Mode");
             SwingUtilities.updateComponentTreeUI(this);
         }
@@ -164,9 +156,8 @@ public class GameOfLife extends JPanel {
             frame.setMinimumSize(new Dimension(minWidth, minHeight));
             frame.setMaximumSize(new Dimension(maxWidth, maxHeight));
 
-            // Crear la barra de menú
             JMenuBar menuBar = createMenuBar(game);
-            frame.setJMenuBar(menuBar); // Siempre se asigna, pero en macOS se muestra en la barra del sistema
+            frame.setJMenuBar(menuBar);
 
             ImageIcon icon = new ImageIcon("../media/icon.png");
             frame.setIconImage(icon.getImage());
@@ -230,6 +221,11 @@ public class GameOfLife extends JPanel {
 
         // HELP MENU
         JMenu helpMenu = new JMenu("Help");
+
+        // Game rules TIENE QUE ABRIR UNA VENTANA CON LAS NORMAS
+        JMenuItem rules = new JMenuItem("Game rules");
+
+        helpMenu.add(rules);
 
         // Github
         JMenuItem github = new JMenuItem("Open on GitHub");
