@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URI;
 
 public class GameOfLife extends JPanel {
     private static int SIZE = 50; // Tamaño de la cuadrícula
@@ -230,8 +231,22 @@ public class GameOfLife extends JPanel {
         // HELP MENU
         JMenu helpMenu = new JMenu("Help");
 
-        // Github TIENE QUE LLEVAR A GITHUB
+        // Github
         JMenuItem github = new JMenuItem("Open on GitHub");
+        github.addActionListener(e -> {
+            try {
+                URI url = new URI("https://github.com/JavIregui/GameOfLife");
+
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                        desktop.browse(url);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         helpMenu.add(github);
 
