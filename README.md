@@ -26,7 +26,7 @@ This repository also contains the tools to package the application into an execu
 
 Before you begin, ensure you have the following software installed:
 
-- **Java JDK+**: Required to compile and run the project.
+- **Java JDK**: Required to compile and run the project.
 - Either **Windows** or **MacOS**, depending on the platform you are creating the app for.
 
 ## Build Instructions
