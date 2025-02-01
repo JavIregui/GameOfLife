@@ -1,10 +1,21 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 
 public class GameOfLife extends JPanel {
-    private static int SIZE = 50; // Grid size
+
+    private static int SIZE = 50;
     private static int CELL_SIZE = 5;
     private double population = 0.3;
     private boolean[][] grid = new boolean[500/CELL_SIZE][500/CELL_SIZE];
@@ -14,6 +25,8 @@ public class GameOfLife extends JPanel {
     private Timer autoTimer;
     private int timerSpeed = 8;
     private JButton toggleButton;
+
+    private boolean loading = false;
     
     public GameOfLife() {
 
@@ -65,18 +78,16 @@ public class GameOfLife extends JPanel {
     }
 
     private void onWindowResized() {
-
         JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        int side = Math.min(topFrame.getWidth(), topFrame.getHeight() - 75);
-    
-        SIZE = side / CELL_SIZE;
-        grid = new boolean[SIZE][SIZE];
-    
-        setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
-
         toggleButton.setBounds(topFrame.getWidth() / 2 - 120, topFrame.getHeight()-60, 240, 30);
-
-        resetGrid();
+    
+        if (!loading) {        
+            int side = Math.min(topFrame.getWidth(), topFrame.getHeight() - 75);
+            SIZE = side / CELL_SIZE;
+            grid = new boolean[SIZE][SIZE];
+            setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
+            resetGrid();
+        }
     }
 
     private void resetGrid() {
@@ -144,6 +155,108 @@ public class GameOfLife extends JPanel {
         }
     }
     
+    private void saveGridToFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save simulation");
+
+        fileChooser.setSelectedFile(new File("gameoflife_state.save"));
+        
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+
+            if (!fileToSave.getName().toLowerCase().endsWith(".save")) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + ".save");
+            }
+            
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileToSave))) {
+                GridState state = new GridState(SIZE, CELL_SIZE, grid);
+                oos.writeObject(state);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadGridFromFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Open simulation");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Save Files (*.save)", "save"));
+        
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToLoad = fileChooser.getSelectedFile();
+            
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileToLoad))) {
+                GridState state = (GridState) ois.readObject();
+
+                loading = true;
+
+                SIZE = state.size;
+                CELL_SIZE = state.cellSize;
+                grid = state.grid;
+
+                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
+                topFrame.setSize(getPreferredSize());
+                topFrame.validate();
+
+                repaint();
+
+                SwingUtilities.invokeLater(() -> {
+                    loading = false;
+                });
+
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveScreenshot() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save screenshot");
+        fileChooser.setSelectedFile(new File("gameoflife_screenshot.png"));
+
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String path = fileToSave.getAbsolutePath();
+
+            if (!path.toLowerCase().endsWith(".png")) {
+                path += ".png";
+            }
+
+            BufferedImage image = new BufferedImage(
+                SIZE * CELL_SIZE,
+                SIZE * CELL_SIZE,
+                BufferedImage.TYPE_INT_RGB
+            );
+
+            Graphics2D g2d = image.createGraphics();
+
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    g2d.setColor(grid[i][j] ? Color.BLACK : Color.WHITE);
+                    g2d.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+                    if (CELL_SIZE > 2 && showGrid) {
+                        g2d.setColor(Color.GRAY);
+                        g2d.drawRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    }
+                }
+            }
+
+            g2d.dispose();
+
+            try {
+                ImageIO.write(image, "PNG", new File(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -219,20 +332,23 @@ public class GameOfLife extends JPanel {
         fileMenu.add(restart);
         fileMenu.addSeparator();
 
-        // Open TIENE QUE IMPORTAR
+        // Open
         JMenuItem open = new JMenuItem("Open simulation");
         open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        open.addActionListener(e -> game.loadGridFromFile());
 
         fileMenu.add(open);
 
-        // Save Submenu TIENE QUE GUARDAR Y HACER CAPTURAS
+        // Save Submenu
         JMenu saveSubMenu = new JMenu("Save");
 
         JMenuItem saveScreenShot = new JMenuItem("Save screenshot");
         saveScreenShot.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        saveScreenShot.addActionListener(e -> game.saveScreenshot());
 
         JMenuItem saveSim = new JMenuItem("Save simulation");
         saveSim.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()));
+        saveSim.addActionListener(e -> game.saveGridToFile());
 
         saveSubMenu.add(saveSim);
         saveSubMenu.add(saveScreenShot);

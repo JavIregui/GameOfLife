@@ -8,14 +8,15 @@ This repository also contains the tools to package the application into an execu
 
 - **Automatic  mode** advances to the next generation automaticcally so you can watch the population evolve as if it were an animation.
 - **Manual mode** allows you to control each step of the generational simulation of the game.
-- Menu Bar integrated with the Operating System
-- Resizable window that affects the game grid
+- **Menu Bar** integrated with the Operating System
+- **Resizable window** that affects the game grid
+- **Save/Load** system
+- **Screenshot** system
 
 ## Future Features
-
+- Save/Load menu styles
 - Multicolor simulation mode
-- Save/Load system
-- Screenshot system
+- Game rules window
 - Settings menu:
   - Percentage of popultion coverage
   - Grid size
