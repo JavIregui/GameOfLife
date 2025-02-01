@@ -26,6 +26,8 @@ This repository also contains the tools to package the application into an execu
   - Game colors
   - Show/Hide Grid
 
+At the moment, there are no plans to introduce new features.
+
 ## Requirements
 
 Before you begin, ensure you have the following software installed:
@@ -53,7 +55,6 @@ chmod +x build.sh
 
 This project is licensed under the MIT License.
 
-###
-##
+#
 
 **Game of Life** is an open-source project developed by Javier Iregui.
