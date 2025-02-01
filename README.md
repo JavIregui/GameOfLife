@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Mi Banner">
+</p>
+
 # Game of Life
 
 **Game of Life** is my Java implementation of the famous cellular automaton created by John Conway. The project simulates the evolution of a population of cells across generations, based on simple rules. The simulation runs on a grid where each cell can be alive or dead, and its state changes depending on the number of live neighbors. My interpretation of Conway's work uses different colors to create several populations developing in the same enviroment.
