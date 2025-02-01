@@ -1,7 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -12,20 +11,25 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameOfLife extends JPanel {
 
     private static int SIZE = 50;
     private static int CELL_SIZE = 5;
-    private double population = 0.3;
-    private boolean[][] grid = new boolean[500/CELL_SIZE][500/CELL_SIZE];
-    private boolean showGrid = true;
+    private Color[][] grid = new Color[500/CELL_SIZE][500/CELL_SIZE];
     
-    private boolean isAutoMode = false;
-    private Timer autoTimer;
-    private int timerSpeed = 8;
-    private JButton toggleButton;
+    private Color[] colors = {Color.GREEN, Color.YELLOW, Color.BLUE, Color.RED};
 
+    private double population = 0.3;
+    private int timerSpeed = 8;
+    private boolean showGrid = true;
+    private boolean isAutoMode = false;    
+    
+    private JButton toggleButton;
+    private Timer autoTimer;
     private boolean loading = false;
     
     public GameOfLife() {
@@ -66,7 +70,6 @@ public class GameOfLife extends JPanel {
         }
         
         add(toggleButton);
-
         updateButtonColor();
         
         autoTimer = new Timer(555-55*timerSpeed, e -> {
@@ -84,7 +87,7 @@ public class GameOfLife extends JPanel {
         if (!loading) {        
             int side = Math.min(topFrame.getWidth(), topFrame.getHeight() - 75);
             SIZE = side / CELL_SIZE;
-            grid = new boolean[SIZE][SIZE];
+            grid = new Color[SIZE][SIZE];
             setPreferredSize(new Dimension(SIZE * CELL_SIZE, SIZE * CELL_SIZE + 50));
             resetGrid();
         }
@@ -93,41 +96,83 @@ public class GameOfLife extends JPanel {
     private void resetGrid() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                grid[i][j] = Math.random() > 1-population;
+                if(Math.random() > 1-population){
+                    int color = (int) (Math.random() * colors.length);
+                    grid[i][j] = colors[color];
+                }
+                else {
+                    grid[i][j] = Color.WHITE;
+                }
             }
         }
         repaint();
     }
  
     private void nextGeneration() {
-        boolean[][] newGrid = new boolean[SIZE][SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                int neighbors = countNeighbors(i, j);
-                if (grid[i][j]) {
-                    newGrid[i][j] = neighbors == 2 || neighbors == 3;
+        Color[][] newGrid = new Color[SIZE][SIZE];
+        
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                int livingNeighbors = 0;
+                Map<Color, Integer> colorCounts = new HashMap<>();
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (dx == 0 && dy == 0) continue;
+                        int nx = x + dx;
+                        int ny = y + dy;
+                        if (nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE) {
+                            Color neighbor = grid[nx][ny];
+                            if (!neighbor.equals(Color.WHITE)) {
+                                livingNeighbors++;
+                                colorCounts.put(neighbor, colorCounts.getOrDefault(neighbor, 0) + 1);
+                            }
+                        }
+                    }
+                }
+                
+                Color current = grid[x][y];
+
+                if (!current.equals(Color.WHITE)) {
+                    if (livingNeighbors == 2 || livingNeighbors == 3) {
+                        newGrid[x][y] = current;
+                    } else {
+                        newGrid[x][y] = Color.WHITE;
+                    }
                 } else {
-                    newGrid[i][j] = neighbors == 3;
+                    if (livingNeighbors == 3) {
+                        newGrid[x][y] = determineNewCellColor(colorCounts);
+                    } else {
+                        newGrid[x][y] = Color.WHITE;
+                    }
                 }
             }
         }
         grid = newGrid;
     }
     
-    private int countNeighbors(int x, int y) {
-        int count = 0;
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                if (dx == 0 && dy == 0) continue;
-                int nx = x + dx, ny = y + dy;
-                if (nx >= 0 && nx < SIZE && ny >= 0 && ny < SIZE && grid[nx][ny]) {
-                    count++;
-                }
+    private Color determineNewCellColor(Map<Color, Integer> colorCounts) {
+        int maxCount = 0;
+        ArrayList<Color> candidateColors = new ArrayList<>();
+        for (Map.Entry<Color, Integer> entry : colorCounts.entrySet()) {
+            int count = entry.getValue();
+            if (count > maxCount) {
+                maxCount = count;
+                candidateColors.clear();
+                candidateColors.add(entry.getKey());
+            } else if (count == maxCount) {
+                candidateColors.add(entry.getKey());
             }
         }
-        return count;
+
+        if (candidateColors.isEmpty()) {
+            int index = (int) (Math.random() * colors.length);
+            return colors[index];
+        }
+
+        int index = (int) (Math.random() * candidateColors.size());
+        return candidateColors.get(index);
     }
-    
+
     private void toggleMode() {
         isAutoMode = !isAutoMode;
 
@@ -237,7 +282,7 @@ public class GameOfLife extends JPanel {
 
             for (int i = 0; i < SIZE; i++) {
                 for (int j = 0; j < SIZE; j++) {
-                    g2d.setColor(grid[i][j] ? Color.BLACK : Color.WHITE);
+                    g2d.setColor(grid[i][j]);
                     g2d.fillRect(j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 
                     if (CELL_SIZE > 2 && showGrid) {
@@ -269,7 +314,7 @@ public class GameOfLife extends JPanel {
 
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                g.setColor(grid[i][j] ? Color.BLACK : Color.WHITE);
+                g.setColor(grid[i][j]);
                 g.fillRect(j * CELL_SIZE + offsetX, i * CELL_SIZE + offsetY, CELL_SIZE, CELL_SIZE);
 
                 if(CELL_SIZE > 2 && showGrid){

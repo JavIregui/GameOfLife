@@ -1,21 +1,22 @@
 # Game of Life
 
-**Game of Life** is my Java implementation of the famous cellular automaton created by John Conway. The project simulates the evolution of a population of cells across generations, based on simple rules. The simulation runs on a grid where each cell can be alive or dead, and its state changes depending on the number of live neighbors.
+**Game of Life** is my Java implementation of the famous cellular automaton created by John Conway. The project simulates the evolution of a population of cells across generations, based on simple rules. The simulation runs on a grid where each cell can be alive or dead, and its state changes depending on the number of live neighbors. My interpretation of Conway's work uses different colors to create several populations developing in the same enviroment.
 
 This repository also contains the tools to package the application into an executable file for different platforms (Mac, Windows).
 
 ## Features
 
+- **Multicolor** simulation representing several populations
 - **Automatic  mode** advances to the next generation automaticcally so you can watch the population evolve as if it were an animation.
-- **Manual mode** allows you to control each step of the generational simulation of the game.
-- **Menu Bar** integrated with the Operating System
-- **Resizable window** that affects the game grid
-- **Save/Load** system
-- **Screenshot** system
+- **Simulation control** allows you to skip to the next step of the generational simulation manually (Spacebar).
+- **Resizable window** that affects the game grid.
+- **Menu Bar** integrated with the Operating System (Windows/MacOS).
+- **Save/Load** system.
+- **Screenshot** system.
+
 
 ## Future Features
 - Save/Load menu styles
-- Multicolor simulation mode
 - Game rules window
 - Settings menu:
   - Percentage of popultion coverage
@@ -52,6 +53,7 @@ chmod +x build.sh
 
 This project is licensed under the MIT License.
 
-#
+##
+##
 
 **Game of Life** is an open-source project developed by Javier Iregui.
