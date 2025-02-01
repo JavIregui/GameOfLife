@@ -53,7 +53,7 @@ chmod +x build.sh
 
 This project is licensed under the MIT License.
 
-##
+###
 ##
 
 **Game of Life** is an open-source project developed by Javier Iregui.
