@@ -7,7 +7,7 @@ This repository also contains the tools to package the application into an execu
 ## Features
 
 - **Multicolor** simulation representing several populations
-- **Automatic  mode** advances to the next generation automaticcally so you can watch the population evolve as if it were an animation.
+- **Automatic mode** advances to the next generation automaticcally so you can watch the population evolve as if it were an animation.
 - **Simulation control** allows you to skip to the next step of the generational simulation manually (Spacebar).
 - **Resizable window** that affects the game grid.
 - **Menu Bar** integrated with the Operating System (Windows/MacOS).
@@ -26,7 +26,7 @@ This repository also contains the tools to package the application into an execu
   - Game colors
   - Show/Hide Grid
 
-At the moment, there are no plans to introduce new features.
+At the moment, there are no plans to introduce any new features.
 
 ## Requirements
 
@@ -57,4 +57,4 @@ This project is licensed under the MIT License.
 
 #
 
-**Game of Life** is an open-source project developed by Javier Iregui.
+**Game of Life** is an open-source project developed by Javier Iregui, 2025.
