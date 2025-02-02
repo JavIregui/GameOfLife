@@ -20,7 +20,6 @@ This repository also contains the tools to package the application into an execu
 
 
 ## Future Features
-- Save/Load menu styles
 - Game rules window
 - Settings menu:
   - Percentage of popultion coverage

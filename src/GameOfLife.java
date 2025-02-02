@@ -201,6 +201,14 @@ public class GameOfLife extends JPanel {
     }
     
     private void saveGridToFile() {
+        LookAndFeel currentLF = UIManager.getLookAndFeel();
+    
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save simulation");
 
@@ -221,9 +229,25 @@ public class GameOfLife extends JPanel {
                 e.printStackTrace();
             }
         }
+
+        try {
+            UIManager.setLookAndFeel(currentLF);
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void loadGridFromFile() {
+
+        LookAndFeel currentLF = UIManager.getLookAndFeel();
+    
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Open simulation");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Save Files (*.save)", "save"));
@@ -256,9 +280,25 @@ public class GameOfLife extends JPanel {
                 e.printStackTrace();
             }
         }
+
+        try {
+            UIManager.setLookAndFeel(currentLF);
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void saveScreenshot() {
+
+        LookAndFeel currentLF = UIManager.getLookAndFeel();
+    
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save screenshot");
         fileChooser.setSelectedFile(new File("gameoflife_screenshot.png"));
@@ -299,6 +339,13 @@ public class GameOfLife extends JPanel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            UIManager.setLookAndFeel(currentLF);
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
