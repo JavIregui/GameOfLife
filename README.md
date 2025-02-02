@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Mi Banner">
+  <img src="media/banner.png" alt="Banner">
 </p>
 
 # Game of Life
