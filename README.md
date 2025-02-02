@@ -18,19 +18,16 @@ This repository also contains the tools to package the application into an execu
 - **Save/Load** system.
 - **Screenshot** system.
 - **Simulation rules** window.
-
+- **Settings** menu:
+  - Percentage of popultion coverage
+  - Cell size
+  - Automatíc Mode speed
+  - Show/Hide Grid
 
 ## Future Features
 
-- Settings menu:
-  - Percentage of popultion coverage
-  - Grid size
-  - Cell size
-  - Automatíc Mode speed
-  - Game colors
-  - Show/Hide Grid
-
 At the moment, there are no plans to introduce any new features.
+I may rewrite most of the code into different classes in the future.
 
 ## Requirements
 
