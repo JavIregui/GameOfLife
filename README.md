@@ -26,7 +26,7 @@ This repository also contains the tools to package the application into an execu
 
 ## Future Features
 
-At the moment, there are no plans to introduce any new features. \n
+At the moment, there are no plans to introduce any new features. <br>
 I may rewrite most of the code into different classes in the future.
 
 ## Requirements
