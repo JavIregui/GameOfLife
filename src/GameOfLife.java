@@ -465,8 +465,33 @@ public class GameOfLife extends JPanel {
         // HELP MENU
         JMenu helpMenu = new JMenu("Help");
 
-        // Game rules TIENE QUE ABRIR UNA VENTANA CON LAS NORMAS
-        JMenuItem rules = new JMenuItem("Game rules");
+        // Game rules
+        JMenuItem rules = new JMenuItem("Simulation rules");
+        rules.addActionListener(e -> {
+
+            LookAndFeel currentLF = UIManager.getLookAndFeel();
+    
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            String mensaje = "\nMulticolor Game of Life simulation:\n\n" +
+                             "Each cell can be alive (color) or dead (white).\n" +
+                             "The simulation follows 2 simple rules:\n" +
+                             "  - A living cell survives if it has 2 or 3 live neighbors.\n" +
+                             "  - A dead cell comes to life if it has 3 living neighbors exactly,\n" +
+                             "     and it takes the most popular color around it.\n" +
+                             "\n¡Enjoy the game!";
+            JOptionPane.showMessageDialog(null, mensaje, "Simulation Rules", JOptionPane.PLAIN_MESSAGE);
+
+            try {
+                UIManager.setLookAndFeel(currentLF);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         helpMenu.add(rules);
 

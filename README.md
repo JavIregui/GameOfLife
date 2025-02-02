@@ -17,10 +17,11 @@ This repository also contains the tools to package the application into an execu
 - **Menu Bar** integrated with the Operating System (Windows/MacOS).
 - **Save/Load** system.
 - **Screenshot** system.
+- **Simulation rules** window.
 
 
 ## Future Features
-- Game rules window
+
 - Settings menu:
   - Percentage of popultion coverage
   - Grid size
