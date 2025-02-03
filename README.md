@@ -26,6 +26,8 @@ This repository also contains the tools to package the application into an execu
 
 ## Future Features
 
+- Draw/Erase tools to edit the simulation state
+
 At the moment, there are no plans to introduce any new features. <br>
 I may rewrite most of the code into different classes in the future.
 
