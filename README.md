@@ -54,6 +54,14 @@ chmod +x build.sh
 ./build.sh
 ```
 
+### 3. Allow execution
+
+If you are running the program on MacOS you may find an error when you open it. <br>
+You will have to give your computer permission to run the program from:<br>
+Apple menu > System Settings > Privacy & Security > Security
+
+On Windows you may need to open it as administrtor.
+
 ## License
 
 This project is licensed under the MIT License.
